@@ -36,7 +36,7 @@ type handlers struct {
 
 func main() {
 	e := echo.New()
-	e.Debug = GetEnv("DEBUG", "") == "true"
+	e.Debug = GetEnv("DEBUG", "") == "false"
 	e.Server.Addr = fmt.Sprintf(":%v", GetEnv("PORT", "7000"))
 	e.HideBanner = true
 
@@ -99,6 +99,7 @@ func (h *handlers) Initialize(c echo.Context) error {
 		"1_schema.sql",
 		"2_init.sql",
 		"3_sample.sql",
+		"4_create_index.sql",
 	}
 	for _, file := range files {
 		data, err := os.ReadFile(SQLDirectory + file)
@@ -1112,33 +1113,46 @@ func (h *handlers) SubmitAssignment(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Submission has been closed for this class.")
 	}
 
-	file, header, err := c.Request().FormFile("file")
-	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid file.")
-	}
-	defer file.Close()
+	 // ファイルのストリーム処理
+    file, header, err := c.Request().FormFile("file")
+    if err != nil {
+        return c.String(http.StatusBadRequest, "Invalid file.")
+    }
+    defer file.Close()
 
-	if _, err := tx.Exec("INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)", userID, classID, header.Filename); err != nil {
-		c.Logger().Error(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+    // データベーストランザクション開始
+    tx, err := h.DB.Beginx()
+    if err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+    defer tx.Rollback()
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		c.Logger().Error(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+    // クエリ実行
+    if _, err := tx.Exec("INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)", userID, classID, header.Filename); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
 
-	dst := AssignmentsDirectory + classID + "-" + userID + ".pdf"
-	if err := os.WriteFile(dst, data, 0666); err != nil {
-		c.Logger().Error(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+    // ファイルをストリーム形式でディスクに書き込み
+    dst := AssignmentsDirectory + classID + "-" + userID + ".pdf"
+    dstFile, err := os.Create(dst)
+    if err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+    defer dstFile.Close()
 
-	if err := tx.Commit(); err != nil {
-		c.Logger().Error(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+    if _, err := io.Copy(dstFile, file); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+
+    // データベーストランザクションコミット
+    if err := tx.Commit(); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
 
 	return c.NoContent(http.StatusNoContent)
 }
@@ -1448,12 +1462,26 @@ func (h *handlers) AddAnnouncement(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	newUnreadAnnouncements := make([]UnreadAnnouncement, 0, len(targets))
+
 	for _, user := range targets {
-		if _, err := tx.Exec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (?, ?)", req.ID, user.ID); err != nil {
-			c.Logger().Error(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
+		newUnreadAnnouncements = append(newUnreadAnnouncements, UnreadAnnouncement{
+			AnnouncementID: req.ID,
+			UserID:         user.ID,
+		})
 	}
+
+	if _, err := tx.NamedExec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (:announcement_id, :user_id)", newUnreadAnnouncements); err != nil {
+		c.Logger().Error(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	// for _, user := range targets {
+	// 	if _, err := tx.Exec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (?, ?)", req.ID, user.ID); err != nil {
+	// 		c.Logger().Error(err)
+	// 		return c.NoContent(http.StatusInternalServerError)
+	// 	}
+	// }
 
 	if err := tx.Commit(); err != nil {
 		c.Logger().Error(err)
