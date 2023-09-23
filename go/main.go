@@ -624,14 +624,21 @@ func (h *handlers) GetGrades(c echo.Context) error {
 
 		// この科目を履修している学生のTotalScore一覧を取得
 		var totals []int
-		query := "SELECT IFNULL(SUM(`submissions`.`score`), 0) AS `total_score`" +
-			" FROM `users`" +
-			" JOIN `registrations` ON `users`.`id` = `registrations`.`user_id`" +
-			" JOIN `courses` ON `registrations`.`course_id` = `courses`.`id`" +
-			" LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id`" +
-			" LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id`" +
-			" WHERE `courses`.`id` = ?" +
-			" GROUP BY `users`.`id`"
+		query := "SELECT IFNULL(SUM(submissions.score), 0) AS total_score"
+			"	FROM users" +
+			"	JOIN registrations ON users.id = registrations.user_id"+
+			"	JOIN courses ON registrations.course_id = courses.id"+
+			"	WHERE courses.id = ?"+
+			"	AND users.id IN ("+
+			"		SELECT DISTINCT users.id"+
+			"		FROM users"+
+			"		JOIN registrations ON users.id = registrations.user_id"+
+			"		JOIN courses ON registrations.course_id = courses.id"+
+			"		LEFT JOIN classes ON courses.id = classes.course_id"+
+			"		LEFT JOIN submissions ON users.id = submissions.user_id AND submissions.class_id = classes.id"+
+			"		WHERE courses.id = ?"+
+			"	)"+
+			"	GROUP BY users.id"
 		if err := h.DB.Select(&totals, query, course.ID); err != nil {
 			c.Logger().Error(err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -661,21 +668,21 @@ func (h *handlers) GetGrades(c echo.Context) error {
 	// GPAの統計値
 	// 一つでも修了した科目がある学生のGPA一覧
 	var gpas []float64
-	query = "SELECT IFNULL(SUM(`submissions`.`score` * `courses`.`credit`), 0) / 100 / `credits`.`credits` AS `gpa`" +
-		" FROM `users`" +
-		" JOIN (" +
-		"     SELECT `users`.`id` AS `user_id`, SUM(`courses`.`credit`) AS `credits`" +
-		"     FROM `users`" +
-		"     JOIN `registrations` ON `users`.`id` = `registrations`.`user_id`" +
-		"     JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = ?" +
-		"     GROUP BY `users`.`id`" +
-		" ) AS `credits` ON `credits`.`user_id` = `users`.`id`" +
-		" JOIN `registrations` ON `users`.`id` = `registrations`.`user_id`" +
-		" JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = ?" +
-		" LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id`" +
-		" LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id`" +
-		" WHERE `users`.`type` = ?" +
-		" GROUP BY `users`.`id`"
+	query = "SELECT IFNULL(SUM(submissions.score * courses.credit), 0) / 100 / credits.credits AS gpa"+
+			"	FROM users" +
+			"	JOIN ("+
+			"		SELECT users.id AS user_id, SUM(courses.credit) AS credits"+
+			"		FROM users"+
+			"		JOIN registrations ON users.id = registrations.user_id"+
+			"		JOIN courses ON registrations.course_id = courses.id AND courses.status = ?"+
+			"		GROUP BY users.id"+
+			"	) AS credits ON credits.user_id = users.id"+
+			"	JOIN registrations ON users.id = registrations.user_id"+
+			"	JOIN courses ON registrations.course_id = courses.id AND courses.status = ?"+
+			"	LEFT JOIN classes ON courses.id = classes.course_id"+
+			"	LEFT JOIN submissions ON users.id = submissions.user_id AND submissions.class_id = classes.id"+
+			"	WHERE users.type = ?"+
+			"	GROUP BY users.id"
 	if err := h.DB.Select(&gpas, query, StatusClosed, StatusClosed, Student); err != nil {
 		c.Logger().Error(err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1333,21 +1340,24 @@ func (h *handlers) GetAnnouncementList(c echo.Context) error {
 
 	var announcements []AnnouncementWithoutDetail
 	var args []interface{}
-	query := "SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread`" +
-		" FROM `announcements`" +
-		" JOIN `courses` ON `announcements`.`course_id` = `courses`.`id`" +
-		" JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id`" +
-		" JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id`" +
-		" WHERE 1=1"
+	query := "SELECT a.id, c.id AS course_id, c.name AS course_name, a.title, NOT ua.is_deleted AS unread"+
+			"	FROM announcements AS a"+
+			"	JOIN courses AS c ON a.course_id = c.id"+
+			"	JOIN registrations AS r ON c.id = r.course_id"+
+			"	JOIN unread_announcements AS ua ON a.id = ua.announcement_id"
 
 	if courseID := c.QueryParam("course_id"); courseID != "" {
-		query += " AND `announcements`.`course_id` = ?"
+		// query += " AND `announcements`.`course_id` = ?"
+		query += " WHERE a.course_id = ?"
 		args = append(args, courseID)
 	}
 
-	query += " AND `unread_announcements`.`user_id` = ?" +
-		" AND `registrations`.`user_id` = ?" +
-		" ORDER BY `announcements`.`id` DESC" +
+	// query += " AND `unread_announcements`.`user_id` = ?" +
+	// 	" AND `registrations`.`user_id` = ?" +
+	// 	" ORDER BY `announcements`.`id` DESC" +
+	// 	" LIMIT ? OFFSET ?"
+	query += " AND ua.user_id = ? AND r.user_id = ?" +
+		" ORDER BY a.id DESC" +
 		" LIMIT ? OFFSET ?"
 	args = append(args, userID, userID)
 
@@ -1536,12 +1546,11 @@ func (h *handlers) GetAnnouncementDetail(c echo.Context) error {
 	defer tx.Rollback()
 
 	var announcement AnnouncementDetail
-	query := "SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, `announcements`.`message`, NOT `unread_announcements`.`is_deleted` AS `unread`" +
-		" FROM `announcements`" +
-		" JOIN `courses` ON `courses`.`id` = `announcements`.`course_id`" +
-		" JOIN `unread_announcements` ON `unread_announcements`.`announcement_id` = `announcements`.`id`" +
-		" WHERE `announcements`.`id` = ?" +
-		" AND `unread_announcements`.`user_id` = ?"
+	query := "SELECT a.id, c.id AS course_id, c.name AS course_name, a.title, a.message, NOT ua.is_deleted AS unread"+
+			"	FROM announcements AS a"+
+			"	JOIN courses AS c ON c.id = a.course_id"+
+			"	LEFT JOIN unread_announcements AS ua ON ua.announcement_id = a.id AND ua.user_id = ?"+
+			"	WHERE a.id = ?"
 	if err := tx.Get(&announcement, query, announcementID, userID); err != nil && err != sql.ErrNoRows {
 		c.Logger().Error(err)
 		return c.NoContent(http.StatusInternalServerError)

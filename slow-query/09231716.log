@@ -1,0 +1,657 @@
+
+# 21.6s user time, 50ms system time, 33.20M rss, 40.13M vsz
+# Current date: Sat Sep 23 17:16:27 2023
+# Hostname: ubuntu
+# Files: mysql-slow.log
+# Overall: 300.91k total, 79 unique, 3.50k QPS, 4.24x concurrency ________
+# Time range: 2023-09-23T08:12:11 to 2023-09-23T08:13:37
+# Attribute          total     min     max     avg     95%  stddev  median
+# ============     ======= ======= ======= ======= ======= ======= =======
+# Exec time           365s     1us      2s     1ms     3ms    13ms    66us
+# Lock time          430ms       0    84ms     1us     1us   181us       0
+# Rows sent        142.48k       0      50    0.48    0.99    2.51       0
+# Rows examine     973.00k       0  17.93k    3.31    0.99   77.81       0
+# Query size        22.15M       6 632.12k   77.18  284.79   1.60k   31.70
+
+# Profile
+# Rank Query ID                      Response time  Calls R/Call V/M   Ite
+# ==== ============================= ============== ===== ====== ===== ===
+#    1 0xFFFCA4D67EA0A788813031B8... 283.7966 77.8% 20783 0.0137  0.16 COMMIT
+#    2 0xDA556F9115773A1A99AA0165...  19.8370  5.4% 86322 0.0002  0.00 ADMIN PREPARE
+#    3 0xDAFB520F3EA62E0FD8FCB26D...   5.6661  1.6%   362 0.0157  0.02 INSERT courses
+#    4 0x34680D6218DB2F97EAE350D3...   4.8131  1.3%  6849 0.0007  0.02 INSERT unread_announcements
+#    5 0x98DD1BA507AB79261637698A...   4.7572  1.3%  4631 0.0010  0.02 INSERT UPDATE submissions
+#    6 0x2BC75A9C3EB65F1EC570DFB4...   4.3613  1.2%  2501 0.0017  0.01 SELECT announcements courses registrations unread_announcements
+#    7 0x27543A651E60736B50443886...   4.1390  1.1%  6414 0.0006  0.01 UPDATE unread_announcements
+#    8 0xAE994A27799DADD410E84835...   3.5936  1.0%  4688 0.0008  0.01 SELECT classes submissions
+#    9 0xF16955B9A50074ED04E1B8A5...   3.4317  0.9%  6416 0.0005  0.01 SELECT announcements courses unread_announcements
+#   10 0x9E2DA589A20EC24C34E11DDE...   2.4463  0.7% 20827 0.0001  0.00 START
+#   11 0x6C0FF098D63D248BBF3D4058...   2.3326  0.6%  4225 0.0006  0.01 UPDATE submissions users
+#   12 0x1F21068CC7652980263E8231...   2.3222  0.6%  2561 0.0009  0.00 SELECT unread_announcements
+#   13 0x0DD94EB0DA6D4A8A3BEAE1CC...   2.2261  0.6%  6414 0.0003  0.01 SELECT registrations
+#   14 0x63C05502F034B2DB20500EA0...   1.9488  0.5%  4950 0.0004  0.01 SELECT classes
+#   15 0xBCFA83825ED2F4DBAB748E30...   1.7908  0.5%  2269 0.0008  0.02 INSERT UPDATE registrations
+#   16 0xD22122C68747429FE1B81D07...   1.5359  0.4%  5129 0.0003  0.00 SELECT courses
+#   17 0x34F073289244FD4599892400...   1.5333  0.4%  4646 0.0003  0.00 SELECT registrations
+#   18 0x0CE2A86226457A4A9046E173...   1.3248  0.4%  4650 0.0003  0.00 SELECT courses
+#   19 0x396201721CD58410E070DA94...   1.2907  0.4%  5274 0.0002  0.00 SELECT users
+#   20 0x07890000813C4CC7111FD2D3...   1.2128  0.3% 86322 0.0000  0.00 ADMIN CLOSE STMT
+# MISC 0xMISC                         10.5207  2.9% 14680 0.0007   0.0 <59 ITEMS>
+
+# Query 1: 247.42 QPS, 3.38x concurrency, ID 0xFFFCA4D67EA0A788813031B8BBC3B329 at byte 64707308
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.16
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          6   20783
+# Exec time     77    284s    13us      2s    14ms    53ms    46ms     4ms
+# Lock time      0       0       0       0       0       0       0       0
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     0 121.78k       6       6       6       6       0       6
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  #######################################
+# 100us  ##############
+#   1ms  ################################################################
+#  10ms  #######################################
+# 100ms  #
+#    1s  #
+#  10s+
+COMMIT\G
+
+# Query 2: 1.03k QPS, 0.24x concurrency, ID 0xDA556F9115773A1A99AA0165670CE848 at byte 62721472
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count         28   86322
+# Exec time      5     20s    20us    20ms   229us   881us   547us    73us
+# Lock time      0       0       0       0       0       0       0       0
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size    11   2.47M      30      30      30      30       0      30
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  ##################################
+#   1ms  ####
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+administrator command: Prepare\G
+
+# Query 3: 5.48 QPS, 0.09x concurrency, ID 0xDAFB520F3EA62E0FD8FCB26DC5D1E62F at byte 80969640
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.02
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          0     362
+# Exec time      1      6s     1ms    71ms    16ms    48ms    16ms     7ms
+# Lock time      0     1ms     1us   709us     3us     1us    36us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     0 147.76k     368     486  417.96  441.81   23.34  400.73
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us
+# 100us
+#   1ms  ################################################################
+#  10ms  ####################################
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'courses'\G
+#    SHOW CREATE TABLE `isucholar`.`courses`\G
+INSERT INTO `courses` (`id`, `code`, `type`, `name`, `description`, `credit`, `period`, `day_of_week`, `teacher_id`, `keywords`) VALUES ('01HB0HK8F925T3R29ZSBWAJAM0', 'M0251', 'major-subjects', 'アルゴリズム力学第一', '本講義では課題提出をもって出席の代わりとする。成績は課題の提出状況により判断する。', 3, 3, 'thursday', '01FF6J8XFSMB96ZKQZK8G516B3', 'アルゴリズム 力学')\G
+
+# Query 4: 103.77 QPS, 0.07x concurrency, ID 0x34680D6218DB2F97EAE350D366B60E94 at byte 49016038
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.02
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          2    6849
+# Exec time      1      5s    56us    94ms   702us     2ms     4ms   113us
+# Lock time      2    11ms       0   534us     1us     1us    13us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     3 889.57k     133     133     133     133       0     133
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ###########################################
+# 100us  ################################################################
+#   1ms  ########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'unread_announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`unread_announcements`\G
+INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES ('01HB0HJG7VP6HMZZ898ZSZQBB7', '01FF6J8XTF31DF5E9CJ7VW4ME0')\G
+
+# Query 5: 70.17 QPS, 0.07x concurrency, ID 0x98DD1BA507AB79261637698A8004A814 at byte 30583833
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.02
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4631
+# Exec time      1      5s    80us    68ms     1ms     3ms     4ms   185us
+# Lock time      4    17ms       0     8ms     3us     1us   113us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     4   1.01M     202     322  228.51  271.23   29.37  212.52
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  #
+# 100us  ################################################################
+#   1ms  ############
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'submissions'\G
+#    SHOW CREATE TABLE `isucholar`.`submissions`\G
+INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES ('01FF6J8XYTPMRT002FYV1TY85K', '01HB0HHX64YDKRCMKFP35ZEBGW', 'S03945.pdf') ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)\G
+
+# Query 6: 30.88 QPS, 0.05x concurrency, ID 0x2BC75A9C3EB65F1EC570DFB4E3F111C5 at byte 64835318
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:16 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          0    2501
+# Exec time      1      4s   145us    73ms     2ms     6ms     3ms   761us
+# Lock time      2    12ms     1us     1ms     4us     2us    38us     1us
+# Rows sent     28  40.30k       0      21   16.50   20.43    7.74   20.43
+# Rows examine  31 304.30k       0     635  124.59  487.09  126.65   80.10
+# Query size     6   1.46M     611     613  611.14  592.07       0  592.07
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us
+# 100us  ################################################################
+#   1ms  ##############################################
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`announcements`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'courses'\G
+#    SHOW CREATE TABLE `isucholar`.`courses`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'registrations'\G
+#    SHOW CREATE TABLE `isucholar`.`registrations`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'unread_announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`unread_announcements`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `announcements`.`course_id` = `courses`.`id` JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id` JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id` WHERE 1=1 AND `unread_announcements`.`user_id` = '01FF6J8Y2A6QAHD5XPWM14045R' AND `registrations`.`user_id` = '01FF6J8Y2A6QAHD5XPWM14045R' ORDER BY `announcements`.`id` DESC LIMIT 21 OFFSET 0\G
+
+# Query 7: 98.68 QPS, 0.06x concurrency, ID 0x27543A651E60736B50443886E289E35A at byte 34915753
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:14 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          2    6414
+# Exec time      1      4s    81us    63ms   645us     2ms     2ms   204us
+# Lock time      3    16ms       0     2ms     2us     1us    34us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0   6.26k       1       1       1       1       0       1
+# Query size     4 958.34k     153     153     153     153       0     153
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  #
+# 100us  ################################################################
+#   1ms  ###########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'unread_announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`unread_announcements`\G
+UPDATE `unread_announcements` SET `is_deleted` = true WHERE `announcement_id` = '01HB0HHR17Y9GZCCPW7M239HZK' AND `user_id` = '01FF6J8XN7GPF263YHCTZGJTFV'\G
+# Converted for EXPLAIN
+# EXPLAIN /*!50100 PARTITIONS*/
+select  `is_deleted` = true from `unread_announcements` where  `announcement_id` = '01HB0HHR17Y9GZCCPW7M239HZK' AND `user_id` = '01FF6J8XN7GPF263YHCTZGJTFV'\G
+
+# Query 8: 71.03 QPS, 0.05x concurrency, ID 0xAE994A27799DADD410E848351C4DFF53 at byte 52356262
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4688
+# Exec time      0      4s   101us    57ms   766us     2ms     2ms   236us
+# Lock time      3    16ms       0     2ms     3us     1us    37us     1us
+# Rows sent      8  12.32k       1       5    2.69    4.96    1.44    1.96
+# Rows examine   1  18.29k       1       9    4.00    8.91    2.62    2.90
+# Query size     6   1.33M     298     298     298     298       0     298
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us
+# 100us  ################################################################
+#   1ms  ############
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'classes'\G
+#    SHOW CREATE TABLE `isucholar`.`classes`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'submissions'\G
+#    SHOW CREATE TABLE `isucholar`.`submissions`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT `classes`.*, `submissions`.`user_id` IS NOT NULL AS `submitted` FROM `classes` LEFT JOIN `submissions` ON `classes`.`id` = `submissions`.`class_id` AND `submissions`.`user_id` = '01FF6J8XMY0D2RGXQ040Z8A0D1' WHERE `classes`.`course_id` = '01HB0HHFFM007HZF0GF1ZTJCAV' ORDER BY `classes`.`part`\G
+
+# Query 9: 98.71 QPS, 0.05x concurrency, ID 0xF16955B9A50074ED04E1B8A511E35989 at byte 49013373
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:14 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          2    6416
+# Exec time      0      3s    77us    81ms   534us     2ms     2ms   159us
+# Lock time      7    33ms       0     2ms     5us     2us    50us     1us
+# Rows sent      4   6.26k       0       1    1.00    0.99    0.02    0.99
+# Rows examine   0   6.26k       0       1    1.00    0.99    0.02    0.99
+# Query size    13   3.08M     503     503     503     503       0     503
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ####
+# 100us  ################################################################
+#   1ms  ########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`announcements`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'courses'\G
+#    SHOW CREATE TABLE `isucholar`.`courses`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'unread_announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`unread_announcements`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, `announcements`.`message`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `courses`.`id` = `announcements`.`course_id` JOIN `unread_announcements` ON `unread_announcements`.`announcement_id` = `announcements`.`id` WHERE `announcements`.`id` = '01HB0HJCDHG7KGSMDC5C7BHKRV' AND `unread_announcements`.`user_id` = '01FF6J8XS5QVPPB1PQTGEGHE8M'\G
+
+# Query 10: 247.94 QPS, 0.03x concurrency, ID 0x9E2DA589A20EC24C34E11DDE0FBF5564 at byte 80752347
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          6   20827
+# Exec time      0      2s     8us     9ms   117us   467us   367us    28us
+# Lock time      0       0       0       0       0       0       0       0
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     1 345.76k      17      17      17      17       0      17
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us  #
+#  10us  ################################################################
+# 100us  ###########
+#   1ms  #
+#  10ms
+# 100ms
+#    1s
+#  10s+
+START TRANSACTION\G
+
+# Query 11: 64.02 QPS, 0.04x concurrency, ID 0x6C0FF098D63D248BBF3D40588EFB42EF at byte 46718760
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4225
+# Exec time      0      2s   155us    63ms   552us     2ms     2ms   236us
+# Lock time      3    14ms       0     2ms     3us     1us    49us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0   4.13k       1       1       1       1       0       1
+# Query size     3 701.39k     169     171  169.99  166.51       0  166.51
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us
+# 100us  ################################################################
+#   1ms  ######
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'submissions'\G
+#    SHOW CREATE TABLE `isucholar`.`submissions`\G
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'users'\G
+#    SHOW CREATE TABLE `isucholar`.`users`\G
+UPDATE `submissions` JOIN `users` ON `users`.`id` = `submissions`.`user_id` SET `score` = 76 WHERE `users`.`code` = 'S00510' AND `class_id` = '01HB0HJ62F209MF3N9ZNJZBC4X'\G
+# Converted for EXPLAIN
+# EXPLAIN /*!50100 PARTITIONS*/
+select  `score` = 76 from `submissions` JOIN `users` ON `users`.`id` = `submissions`.`user_id` where  `users`.`code` = 'S00510' AND `class_id` = '01HB0HJ62F209MF3N9ZNJZBC4X'\G
+
+# Query 12: 31.62 QPS, 0.03x concurrency, ID 0x1F21068CC7652980263E82315944F5FD at byte 34916578
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:16 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          0    2561
+# Exec time      0      2s    81us    62ms   906us     3ms     2ms   348us
+# Lock time      1     7ms       0     1ms     2us     1us    34us     1us
+# Rows sent      1   2.50k       1       1       1       1       0       1
+# Rows examine  14 142.15k       0     127   56.84  112.70   39.61   56.92
+# Query size     1 277.61k     111     111     111     111       0     111
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ##
+# 100us  ################################################################
+#   1ms  ##################
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'unread_announcements'\G
+#    SHOW CREATE TABLE `isucholar`.`unread_announcements`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT COUNT(*) FROM `unread_announcements` WHERE `user_id` = '01FF6J8XK7DEG49QDW5SKE877Y' AND NOT `is_deleted`\G
+
+# Query 13: 98.68 QPS, 0.03x concurrency, ID 0x0DD94EB0DA6D4A8A3BEAE1CC736A915B at byte 76547300
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:14 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          2    6414
+# Exec time      0      2s    41us    55ms   347us     1ms     1ms    98us
+# Lock time      6    26ms       0     6ms     4us     1us    85us     1us
+# Rows sent      4   6.26k       1       1       1       1       0       1
+# Rows examine   0   6.26k       1       1       1       1       0       1
+# Query size     3 864.39k     138     138     138     138       0     138
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  #######################################################
+#   1ms  ########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'registrations'\G
+#    SHOW CREATE TABLE `isucholar`.`registrations`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT COUNT(*) FROM `registrations` WHERE `course_id` = '01HB0HJN1T566A49EYY31JETH0' AND `user_id` = '01FF6J8XK7DEG49QDW5SKE877Y' LIMIT 1\G
+
+# Query 14: 75 QPS, 0.03x concurrency, ID 0x63C05502F034B2DB20500EA0606444D4 at byte 43898482
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.01
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4950
+# Exec time      0      2s    42us    84ms   393us     1ms     2ms    93us
+# Lock time     22    99ms       0    84ms    19us     1us     1ms     1us
+# Rows sent      3   4.83k       0       1    1.00    0.99    0.02    0.99
+# Rows examine   0   4.83k       0       1    1.00    0.99    0.02    0.99
+# Query size     1 449.56k      93      93      93      93       0      93
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  #################################################
+#   1ms  #########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'classes'\G
+#    SHOW CREATE TABLE `isucholar`.`classes`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT `submission_closed` FROM `classes` WHERE `id` = '01HB0HJ22Y775FXDRA527NZX08' FOR SHARE\G
+
+# Query 15: 34.91 QPS, 0.03x concurrency, ID 0xBCFA83825ED2F4DBAB748E30997E1B95 at byte 76551146
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.02
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:18
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          0    2269
+# Exec time      0      2s    57us    57ms   789us     2ms     4ms   144us
+# Lock time      1     8ms       0     1ms     3us     1us    36us     1us
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size     2 463.11k     209     209     209     209       0     209
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ###########################
+# 100us  ################################################################
+#   1ms  ##########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'registrations'\G
+#    SHOW CREATE TABLE `isucholar`.`registrations`\G
+INSERT INTO `registrations` (`course_id`, `user_id`) VALUES ('01HB0HJT32F0GSKJF4G494VZ5N', '01FF6J8XHVQS3WG68MYFYV3ET4') ON DUPLICATE KEY UPDATE `course_id` = VALUES(`course_id`), `user_id` = VALUES(`user_id`)\G
+
+# Query 16: 77.71 QPS, 0.02x concurrency, ID 0xD22122C68747429FE1B81D07D7E3DD52 at byte 64200949
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    5129
+# Exec time      0      2s    43us    12ms   299us     1ms   615us   103us
+# Lock time      3    16ms       0     1ms     3us     1us    35us     1us
+# Rows sent      3   5.01k       1       1       1       1       0       1
+# Rows examine   0   5.01k       0       1    1.00    0.99    0.02    0.99
+# Query size     1 360.63k      72      72      72      72       0      72
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ##############################################################
+# 100us  ################################################################
+#   1ms  ########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'courses'\G
+#    SHOW CREATE TABLE `isucholar`.`courses`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT COUNT(*) FROM `courses` WHERE `id` = '01HB0HHFEVWDQC98XRB788XCE6'\G
+
+# Query 17: 70.39 QPS, 0.02x concurrency, ID 0x34F073289244FD45998924008BBB9CDA at byte 76552486
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4646
+# Exec time      0      2s    44us    55ms   330us     1ms     1ms   103us
+# Lock time      2    10ms       0   708us     2us     1us    16us     1us
+# Rows sent      3   4.54k       1       1       1       1       0       1
+# Rows examine   0   4.54k       0       1    1.00    0.99    0.01    0.99
+# Query size     2 626.12k     138     138     138     138       0     138
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  ###############################################################
+#   1ms  #########
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'registrations'\G
+#    SHOW CREATE TABLE `isucholar`.`registrations`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT COUNT(*) FROM `registrations` WHERE `user_id` = '01FF6J8XGR3P4MBJX86BT2DEK0' AND `course_id` = '01HB0HHFG7NN8TDD5XF0EZEYA5' LIMIT 1\G
+
+# Query 18: 70.45 QPS, 0.02x concurrency, ID 0x0CE2A86226457A4A9046E173DE8DA5AA at byte 60563787
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:19
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    4650
+# Exec time      0      1s    41us    11ms   284us     1ms   582us    98us
+# Lock time      4    19ms       0     5ms     4us     1us    92us     1us
+# Rows sent      3   4.54k       0       1    1.00    0.99    0.01    0.99
+# Rows examine   0   4.54k       0       1    1.00    0.99    0.01    0.99
+# Query size     1 372.36k      82      82      82      82       0      82
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  ##############################################################
+#   1ms  #######
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'courses'\G
+#    SHOW CREATE TABLE `isucholar`.`courses`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT `status` FROM `courses` WHERE `id` = '01HB0HHFFB3WF1VHKT1SYHKPWV' FOR SHARE\G
+
+# Query 19: 81.14 QPS, 0.02x concurrency, ID 0x396201721CD58410E070DA9421CA8C8D at byte 61928320
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:18
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count          1    5274
+# Exec time      0      1s    37us     8ms   244us   925us   479us    84us
+# Lock time      3    17ms       0     6ms     3us     1us    80us     1us
+# Rows sent      3   5.15k       1       1       1       1       0       1
+# Rows examine   0   5.15k       1       1       1       1       0       1
+# Query size     1 324.47k      63      63      63      63       0      63
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us
+#  10us  ################################################################
+# 100us  ##############################################
+#   1ms  #####
+#  10ms
+# 100ms
+#    1s
+#  10s+
+# Tables
+#    SHOW TABLE STATUS FROM `isucholar` LIKE 'users'\G
+#    SHOW CREATE TABLE `isucholar`.`users`\G
+# EXPLAIN /*!50100 PARTITIONS*/
+SELECT * FROM `users` WHERE `id` = '01FF6J8XFTS4A8JA427T7B3X2E'\G
+
+# Query 20: 1.03k QPS, 0.01x concurrency, ID 0x07890000813C4CC7111FD2D3F3B3B4EB at byte 10562079
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: 2023-09-23T08:12:13 to 2023-09-23T08:13:37
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count         28   86322
+# Exec time      0      1s     1us    19ms    14us    13us   153us     4us
+# Lock time      0       0       0       0       0       0       0       0
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size    12   2.72M      33      33      33      33       0      33
+# String:
+# Databases    isucholar
+# Hosts        localhost
+# Users        isucon
+# Query_time distribution
+#   1us  ################################################################
+#  10us  #####
+# 100us  #
+#   1ms  #
+#  10ms  #
+# 100ms
+#    1s
+#  10s+
+administrator command: Close stmt\G
