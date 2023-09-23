@@ -570,6 +570,20 @@ func (h *handlers) GetGrades(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	if count == 0 {
+		return c.JSON(http.StatusOK, GetGradeResponse{
+			Summary: Summary{
+				Credits:   0,
+				GPA:       0.0,
+				GpaTScore: 0.0,
+				GpaAvg:    0.0,
+				GpaMax:    0.0,
+				GpaMin:    0.0,
+			},
+			CourseResults: []CourseResult{},	
+		})
+	}
+
 	// キャッシュからmyGPA, courseResultsを取得
 	var myGPA float64
 	var courseResults []CourseResult
@@ -711,6 +725,8 @@ func (h *handlers) GetGrades(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	} (gpas)
+
+	wg.Wait()
 
 	res := GetGradeResponse{
 		Summary: Summary{
