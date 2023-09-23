@@ -855,21 +855,15 @@ func (h *handlers) AddCourse(c echo.Context) error {
 		courseID, req.Code, req.Type, req.Name, req.Description, req.Credit, req.Period, req.DayOfWeek, userID, req.Keywords)
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == uint16(mysqlErrNumDuplicateEntry) {
-			// 重複エントリの確認
-			var existingCourse Course
-			if err := h.DB.Get(&existingCourse, "SELECT * FROM `courses` WHERE `code` = ?", req.Code); err != nil {
+			var course Course
+			if err := h.DB.Get(&course, "SELECT * FROM `courses` WHERE `code` = ?", req.Code); err != nil {
 				c.Logger().Error(err)
 				return c.NoContent(http.StatusInternalServerError)
 			}
-
-			// 重複エントリが同一の場合
-			if req.Type == existingCourse.Type && req.Name == existingCourse.Name && req.Description == existingCourse.Description &&
-				req.Credit == int(existingCourse.Credit) && req.Period == int(existingCourse.Period) &&
-				req.DayOfWeek == existingCourse.DayOfWeek && req.Keywords == existingCourse.Keywords {
-				return c.JSON(http.StatusCreated, AddCourseResponse{ID: existingCourse.ID})
+			if req.Type != course.Type || req.Name != course.Name || req.Description != course.Description || req.Credit != int(course.Credit) || req.Period != int(course.Period) || req.DayOfWeek != course.DayOfWeek || req.Keywords != course.Keywords {
+				return c.String(http.StatusConflict, "A course with the same code already exists.")
 			}
-
-			return c.String(http.StatusConflict, "A course with the same code already exists.")
+			return c.JSON(http.StatusCreated, AddCourseResponse{ID: course.ID})
 		}
 		c.Logger().Error(err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -877,47 +871,6 @@ func (h *handlers) AddCourse(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, AddCourseResponse{ID: courseID})
 }
-
-// func (h *handlers) AddCourse(c echo.Context) error {
-// 	userID, _, _, err := getUserInfo(c)
-// 	if err != nil {
-// 		c.Logger().Error(err)
-// 		return c.NoContent(http.StatusInternalServerError)
-// 	}
-
-// 	var req AddCourseRequest
-// 	if err := c.Bind(&req); err != nil {
-// 		return c.String(http.StatusBadRequest, "Invalid format.")
-// 	}
-
-// 	if req.Type != LiberalArts && req.Type != MajorSubjects {
-// 		return c.String(http.StatusBadRequest, "Invalid course type.")
-// 	}
-// 	if !contains(daysOfWeek, req.DayOfWeek) {
-// 		return c.String(http.StatusBadRequest, "Invalid day of week.")
-// 	}
-
-// 	courseID := newULID()
-// 	_, err = h.DB.Exec("INSERT INTO `courses` (`id`, `code`, `type`, `name`, `description`, `credit`, `period`, `day_of_week`, `teacher_id`, `keywords`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-// 		courseID, req.Code, req.Type, req.Name, req.Description, req.Credit, req.Period, req.DayOfWeek, userID, req.Keywords)
-// 	if err != nil {
-// 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == uint16(mysqlErrNumDuplicateEntry) {
-// 			var course Course
-// 			if err := h.DB.Get(&course, "SELECT * FROM `courses` WHERE `code` = ?", req.Code); err != nil {
-// 				c.Logger().Error(err)
-// 				return c.NoContent(http.StatusInternalServerError)
-// 			}
-// 			if req.Type != course.Type || req.Name != course.Name || req.Description != course.Description || req.Credit != int(course.Credit) || req.Period != int(course.Period) || req.DayOfWeek != course.DayOfWeek || req.Keywords != course.Keywords {
-// 				return c.String(http.StatusConflict, "A course with the same code already exists.")
-// 			}
-// 			return c.JSON(http.StatusCreated, AddCourseResponse{ID: course.ID})
-// 		}
-// 		c.Logger().Error(err)
-// 		return c.NoContent(http.StatusInternalServerError)
-// 	}
-
-// 	return c.JSON(http.StatusCreated, AddCourseResponse{ID: courseID})
-// }
 
 type GetCourseDetailResponse struct {
 	ID          string       `json:"id" db:"id"`
