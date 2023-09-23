@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ../webapp/go
+cd ../go
 make all
 
 sudo systemctl stop --now isucholar.go.service
