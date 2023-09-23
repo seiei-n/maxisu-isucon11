@@ -1101,86 +1101,76 @@ func (h *handlers) SubmitAssignment(c echo.Context) error {
 	defer tx.Rollback()
 
 	var status CourseStatus
-	var registrationCount int
-	var submissionClosed bool
-
-	// クエリ1: コースのステータスを取得
-	if err := tx.Get(&status, "SELECT `status` FROM `courses` WHERE `id` = ? FOR SHARE", courseID); err != nil {
-	    if err == sql.ErrNoRows {
-	        return c.String(http.StatusNotFound, "No such course.")
-	    }
-	    c.Logger().Error(err)
-	    return c.NoContent(http.StatusInternalServerError)
-	}
-
-	// ステータスチェック
-	if status != StatusInProgress {
-	    return c.String(http.StatusBadRequest, "This course is not in progress.")
-	}
-
-	// クエリ2: ユーザーのコース登録数を取得
-	if err := tx.Get(&registrationCount, "SELECT COUNT(*) FROM `registrations` WHERE `user_id` = ? AND `course_id` = ?", userID, courseID); err != nil {
-	    c.Logger().Error(err)
-	    return c.NoContent(http.StatusInternalServerError)
-	}
-
-	if registrationCount == 0 {
-	    return c.String(http.StatusBadRequest, "You have not taken this course.")
-	}
-
-	// クエリ3: クラスの提出締め切りステータスを取得
-	if err := tx.Get(&submissionClosed, "SELECT `submission_closed` FROM `classes` WHERE `id` = ?", classID); err != nil {
-	    if err == sql.ErrNoRows {
-	        return c.String(http.StatusNotFound, "No such class.")
-	    }
-	    c.Logger().Error(err)
-	    return c.NoContent(http.StatusInternalServerError)
-	}
-
-	if submissionClosed {
-	    return c.String(http.StatusBadRequest, "Submission has been closed for this class.")
-	}
-
-	// ファイルのストリーム処理
-	file, header, err := c.Request().FormFile("file")
-	if err != nil {
-	 	return c.String(http.StatusBadRequest, "Invalid file.")
-	}
-	defer file.Close()
- 
-	// データベーストランザクション開始
-	tx, err := h.DB.Beginx()
-	if err != nil {
-	 	c.Logger().Error(err)
-	 	return c.NoContent(http.StatusInternalServerError)
-	}
-	defer tx.Rollback()
- 
-	// クエリ実行
-	if _, err := tx.Exec("INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)", userID, classID, header.Filename); err != nil {
-	 	c.Logger().Error(err)
-	 	return c.NoContent(http.StatusInternalServerError)
-	}
- 
-	// ファイルをストリーム形式でディスクに書き込み
-	dst := AssignmentsDirectory + classID + "-" + userID + ".pdf"
-	dstFile, err := os.Create(dst)
-	if err != nil {
+	if err := tx.Get(&status, "SELECT `status` FROM `courses` WHERE `id` = ? FOR SHARE", courseID); err != nil && err != sql.ErrNoRows {
 		c.Logger().Error(err)
-	 	return c.NoContent(http.StatusInternalServerError)
+		return c.NoContent(http.StatusInternalServerError)
+	} else if err == sql.ErrNoRows {
+		return c.String(http.StatusNotFound, "No such course.")
 	}
-	defer dstFile.Close()
- 
-	if _, err := io.Copy(dstFile, file); err != nil {
-	 	c.Logger().Error(err)
-	 	return c.NoContent(http.StatusInternalServerError)
+	if status != StatusInProgress {
+		return c.String(http.StatusBadRequest, "This course is not in progress.")
 	}
- 
-	// データベーストランザクションコミット
-	if err := tx.Commit(); err != nil {
-	 	c.Logger().Error(err)
-	 	return c.NoContent(http.StatusInternalServerError)
+
+	var registrationCount int
+	if err := tx.Get(&registrationCount, "SELECT COUNT(*) FROM `registrations` WHERE `user_id` = ? AND `course_id` = ? LIMIT 1", userID, courseID); err != nil {
+		c.Logger().Error(err)
+		return c.NoContent(http.StatusInternalServerError)
 	}
+	if registrationCount == 0 {
+		return c.String(http.StatusBadRequest, "You have not taken this course.")
+	}
+
+	var submissionClosed bool
+	if err := tx.Get(&submissionClosed, "SELECT `submission_closed` FROM `classes` WHERE `id` = ? FOR SHARE", classID); err != nil && err != sql.ErrNoRows {
+		c.Logger().Error(err)
+		return c.NoContent(http.StatusInternalServerError)
+	} else if err == sql.ErrNoRows {
+		return c.String(http.StatusNotFound, "No such class.")
+	}
+	if submissionClosed {
+		return c.String(http.StatusBadRequest, "Submission has been closed for this class.")
+	}
+
+	 // ファイルのストリーム処理
+    file, header, err := c.Request().FormFile("file")
+    if err != nil {
+        return c.String(http.StatusBadRequest, "Invalid file.")
+    }
+    defer file.Close()
+
+    // データベーストランザクション開始
+    tx, err := h.DB.Beginx()
+    if err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+    defer tx.Rollback()
+
+    // クエリ実行
+    if _, err := tx.Exec("INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)", userID, classID, header.Filename); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+
+    // ファイルをストリーム形式でディスクに書き込み
+    dst := AssignmentsDirectory + classID + "-" + userID + ".pdf"
+    dstFile, err := os.Create(dst)
+    if err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+    defer dstFile.Close()
+
+    if _, err := io.Copy(dstFile, file); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
+
+    // データベーストランザクションコミット
+    if err := tx.Commit(); err != nil {
+        c.Logger().Error(err)
+        return c.NoContent(http.StatusInternalServerError)
+    }
 
 	return c.NoContent(http.StatusNoContent)
 }
