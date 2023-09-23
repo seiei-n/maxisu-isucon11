@@ -1,7 +1,6 @@
 #!/bin/sh
 
-cd ../go
-make all
+cd ../go && make clean && make all
 
 sudo systemctl stop --now isucholar.go.service
 sudo systemctl disable isucholar.go.service
