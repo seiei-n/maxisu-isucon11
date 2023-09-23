@@ -99,6 +99,7 @@ func (h *handlers) Initialize(c echo.Context) error {
 		"1_schema.sql",
 		"2_init.sql",
 		"3_sample.sql",
+		"4_create_index.sql",
 	}
 	for _, file := range files {
 		data, err := os.ReadFile(SQLDirectory + file)
@@ -1466,12 +1467,26 @@ func (h *handlers) AddAnnouncement(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	newUnreadAnnouncements := make([]UnreadAnnouncement, 0, len(targets))
+
 	for _, user := range targets {
-		if _, err := tx.Exec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (?, ?)", req.ID, user.ID); err != nil {
-			c.Logger().Error(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
+		newUnreadAnnouncements = append(newUnreadAnnouncements, UnreadAnnouncement{
+			AnnouncementID: req.ID,
+			UserID:         user.ID,
+		})
 	}
+
+	if _, err := tx.NamedExec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (:announcement_id, :user_id)", newUnreadAnnouncements); err != nil {
+		c.Logger().Error(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	// for _, user := range targets {
+	// 	if _, err := tx.Exec("INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES (?, ?)", req.ID, user.ID); err != nil {
+	// 		c.Logger().Error(err)
+	// 		return c.NoContent(http.StatusInternalServerError)
+	// 	}
+	// }
 
 	if err := tx.Commit(); err != nil {
 		c.Logger().Error(err)
