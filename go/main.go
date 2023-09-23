@@ -99,6 +99,7 @@ func (h *handlers) Initialize(c echo.Context) error {
 		"1_schema.sql",
 		"2_init.sql",
 		"3_sample.sql",
+		"4_create_index.sql",
 	}
 	for _, file := range files {
 		data, err := os.ReadFile(SQLDirectory + file)
