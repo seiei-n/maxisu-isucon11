@@ -1340,21 +1340,24 @@ func (h *handlers) GetAnnouncementList(c echo.Context) error {
 
 	var announcements []AnnouncementWithoutDetail
 	var args []interface{}
-	query := "SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread`" +
-		" FROM `announcements`" +
-		" JOIN `courses` ON `announcements`.`course_id` = `courses`.`id`" +
-		" JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id`" +
-		" JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id`" +
-		" WHERE 1=1"
+	query := "SELECT a.id, c.id AS course_id, c.name AS course_name, a.title, NOT ua.is_deleted AS unread"+
+			"	FROM announcements AS a"+
+			"	JOIN courses AS c ON a.course_id = c.id"+
+			"	JOIN registrations AS r ON c.id = r.course_id"+
+			"	JOIN unread_announcements AS ua ON a.id = ua.announcement_id"
 
 	if courseID := c.QueryParam("course_id"); courseID != "" {
-		query += " AND `announcements`.`course_id` = ?"
+		// query += " AND `announcements`.`course_id` = ?"
+		query += " WHERE a.course_id = ?"
 		args = append(args, courseID)
 	}
 
-	query += " AND `unread_announcements`.`user_id` = ?" +
-		" AND `registrations`.`user_id` = ?" +
-		" ORDER BY `announcements`.`id` DESC" +
+	// query += " AND `unread_announcements`.`user_id` = ?" +
+	// 	" AND `registrations`.`user_id` = ?" +
+	// 	" ORDER BY `announcements`.`id` DESC" +
+	// 	" LIMIT ? OFFSET ?"
+	query += " AND ua.user_id = ? AND r.user_id = ?" +
+		" ORDER BY a.id DESC" +
 		" LIMIT ? OFFSET ?"
 	args = append(args, userID, userID)
 
@@ -1543,12 +1546,11 @@ func (h *handlers) GetAnnouncementDetail(c echo.Context) error {
 	defer tx.Rollback()
 
 	var announcement AnnouncementDetail
-	query := "SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, `announcements`.`message`, NOT `unread_announcements`.`is_deleted` AS `unread`" +
-		" FROM `announcements`" +
-		" JOIN `courses` ON `courses`.`id` = `announcements`.`course_id`" +
-		" JOIN `unread_announcements` ON `unread_announcements`.`announcement_id` = `announcements`.`id`" +
-		" WHERE `announcements`.`id` = ?" +
-		" AND `unread_announcements`.`user_id` = ?"
+	query := "SELECT a.id, c.id AS course_id, c.name AS course_name, a.title, a.message, NOT ua.is_deleted AS unread"+
+			"	FROM announcements AS a"+
+			"	JOIN courses AS c ON c.id = a.course_id"+
+			"	LEFT JOIN unread_announcements AS ua ON ua.announcement_id = a.id AND ua.user_id = ?"+
+			"	WHERE a.id = ?"
 	if err := tx.Get(&announcement, query, announcementID, userID); err != nil && err != sql.ErrNoRows {
 		c.Logger().Error(err)
 		return c.NoContent(http.StatusInternalServerError)
