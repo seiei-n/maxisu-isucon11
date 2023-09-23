@@ -1,0 +1,30 @@
+Count: 104183  Time=0.01s (1468s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
+  COMMIT
+
+Count: 946870  Time=0.00s (117s)  Lock=0.00s (0s)  Rows=1.0 (956184), isucon[isucon]@localhost
+  #
+
+Count: 1786  Time=0.02s (32s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
+  INSERT INTO `courses` (`id`, `code`, `type`, `name`, `description`, `credit`, `period`, `day_of_week`, `teacher_id`, `keywords`) VALUES ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S')
+
+Count: 23368  Time=0.00s (23s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
+  INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES ('S', 'S', 'S') ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)
+
+Count: 213  Time=0.11s (23s)  Lock=0.00s (0s)  Rows=36.0 (7670), isucon[isucon]@localhost
+  SELECT IFNULL(SUM(`submissions`.`score` * `courses`.`credit`), N) / N / `credits`.`credits` AS `gpa` FROM `users` JOIN (     SELECT `users`.`id` AS `user_id`, SUM(`courses`.`credit`) AS `credits`     FROM `users`     JOIN `registrations` ON `users`.`id` = `registrations`.`user_id`     JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = 'S'     GROUP BY `users`.`id` ) AS `credits` ON `credits`.`user_id` = `users`.`id` JOIN `registrations` ON `users`.`id` = `registrations`.`user_id` JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = 'S' LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id` LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id` WHERE `users`.`type` = 'S' GROUP BY `users`.`id`
+
+Count: 34764  Time=0.00s (23s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
+  INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES ('S', 'S')
+
+Count: 7092  Time=0.00s (22s)  Lock=0.00s (0s)  Rows=31.1 (220873), isucon[isucon]@localhost
+  SELECT IFNULL(SUM(`submissions`.`score`), N) AS `total_score` FROM `users` JOIN `registrations` ON `users`.`id` = `registrations`.`user_id` JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id` LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id` WHERE `courses`.`id` = 'S' GROUP BY `users`.`id`
+
+Count: 32780  Time=0.00s (22s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
+  UPDATE `unread_announcements` SET `is_deleted` = true WHERE `announcement_id` = 'S' AND `user_id` = 'S'
+
+Count: 12567  Time=0.00s (21s)  Lock=0.00s (0s)  Rows=16.4 (206079), isucon[isucon]@localhost
+  SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `announcements`.`course_id` = `courses`.`id` JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id` JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id` WHERE N=N AND `unread_announcements`.`user_id` = 'S' AND `registrations`.`user_id` = 'S' ORDER BY `announcements`.`id` DESC LIMIT N OFFSET N
+
+Count: 23559  Time=0.00s (18s)  Lock=0.00s (0s)  Rows=2.7 (63262), isucon[isucon]@localhost
+  SELECT `classes`.*, `submissions`.`user_id` IS NOT NULL AS `submitted` FROM `classes` LEFT JOIN `submissions` ON `classes`.`id` = `submissions`.`class_id` AND `submissions`.`user_id` = 'S' WHERE `classes`.`course_id` = 'S' ORDER BY `classes`.`part`
+
