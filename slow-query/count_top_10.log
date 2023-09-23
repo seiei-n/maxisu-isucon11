@@ -1,55 +1,55 @@
 Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
-  Count: N  Time=N.01s (286s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 20192  Time=0.01s (286s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   COMMIT
-  Count: N  Time=N.00s (25s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 191531  Time=0.00s (25s)  Lock=0.00s (0s)  Rows=1.0 (199154), isucon[isucon]@localhost
   #
-  Count: N  Time=N.02s (5s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 335  Time=0.02s (5s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `courses` (`id`, `code`, `type`, `name`, `description`, `credit`, `period`, `day_of_week`, `teacher_id`, `keywords`) VALUES ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S')
-  Count: N  Time=N.00s (5s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1633  Time=0.00s (5s)  Lock=0.00s (0s)  Rows=33.0 (53866), isucon[isucon]@localhost
   SELECT IFNULL(SUM(`submissions`.`score`), N) AS `total_score` FROM `users` JOIN `registrations` ON `users`.`id` = `registrations`.`user_id` JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id` LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id` WHERE `courses`.`id` = 'S' GROUP BY `users`.`id`
-  Count: N  Time=N.11s (5s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 48  Time=0.11s (5s)  Lock=0.00s (0s)  Rows=37.6 (1804), isucon[isucon]@localhost
   SELECT IFNULL(SUM(`submissions`.`score` * `courses`.`credit`), N) / N / `credits`.`credits` AS `gpa` FROM `users` JOIN (     SELECT `users`.`id` AS `user_id`, SUM(`courses`.`credit`) AS `credits`     FROM `users`     JOIN `registrations` ON `users`.`id` = `registrations`.`user_id`     JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = 'S'     GROUP BY `users`.`id` ) AS `credits` ON `credits`.`user_id` = `users`.`id` JOIN `registrations` ON `users`.`id` = `registrations`.`user_id` JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` AND `courses`.`status` = 'S' LEFT JOIN `classes` ON `courses`.`id` = `classes`.`course_id` LEFT JOIN `submissions` ON `users`.`id` = `submissions`.`user_id` AND `submissions`.`class_id` = `classes`.`id` WHERE `users`.`type` = 'S' GROUP BY `users`.`id`
-  Count: N  Time=N.00s (4s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 7305  Time=0.00s (4s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `unread_announcements` (`announcement_id`, `user_id`) VALUES ('S', 'S')
-  Count: N  Time=N.00s (4s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2339  Time=0.00s (4s)  Lock=0.00s (0s)  Rows=15.9 (37134), isucon[isucon]@localhost
   SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `announcements`.`course_id` = `courses`.`id` JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id` JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id` WHERE N=N AND `unread_announcements`.`user_id` = 'S' AND `registrations`.`user_id` = 'S' ORDER BY `announcements`.`id` DESC LIMIT N OFFSET N
-  Count: N  Time=N.00s (4s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4437  Time=0.00s (4s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `submissions` (`user_id`, `class_id`, `file_name`) VALUES ('S', 'S', 'S') ON DUPLICATE KEY UPDATE `file_name` = VALUES(`file_name`)
-  Count: N  Time=N.00s (4s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 6533  Time=0.00s (4s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   UPDATE `unread_announcements` SET `is_deleted` = true WHERE `announcement_id` = 'S' AND `user_id` = 'S'
-  Count: N  Time=N.00s (3s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 6535  Time=0.00s (3s)  Lock=0.00s (0s)  Rows=1.0 (6533), isucon[isucon]@localhost
   SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, `announcements`.`message`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `courses`.`id` = `announcements`.`course_id` JOIN `unread_announcements` ON `unread_announcements`.`announcement_id` = `announcements`.`id` WHERE `announcements`.`id` = 'S' AND `unread_announcements`.`user_id` = 'S'
-  Count: N  Time=N.00s (3s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4480  Time=0.00s (3s)  Lock=0.00s (0s)  Rows=2.6 (11767), isucon[isucon]@localhost
   SELECT `classes`.*, `submissions`.`user_id` IS NOT NULL AS `submitted` FROM `classes` LEFT JOIN `submissions` ON `classes`.`id` = `submissions`.`class_id` AND `submissions`.`user_id` = 'S' WHERE `classes`.`course_id` = 'S' ORDER BY `classes`.`part`
-  Count: N  Time=N.00s (2s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4189  Time=0.00s (2s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   UPDATE `submissions` JOIN `users` ON `users`.`id` = `submissions`.`user_id` SET `score` = N WHERE `users`.`code` = 'S' AND `class_id` = 'S'
-  Count: N  Time=N.00s (2s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 20230  Time=0.00s (2s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   START TRANSACTION
-  Count: N  Time=N.00s (2s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 6533  Time=0.00s (2s)  Lock=0.00s (0s)  Rows=1.0 (6533), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `registrations` WHERE `course_id` = 'S' AND `user_id` = 'S' LIMIT N
-  Count: N  Time=N.00s (2s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2399  Time=0.00s (2s)  Lock=0.00s (0s)  Rows=1.0 (2399), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `unread_announcements` WHERE `user_id` = 'S' AND NOT `is_deleted`
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4743  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (4741), isucon[isucon]@localhost
   SELECT `submission_closed` FROM `classes` WHERE `id` = 'S' FOR SHARE
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 5558  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (5558), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `submissions` WHERE `class_id` = 'S'
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4894  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (4894), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `courses` WHERE `id` = 'S'
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4452  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (4452), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `registrations` WHERE `user_id` = 'S' AND `course_id` = 'S' LIMIT N
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2280  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `registrations` (`course_id`, `user_id`) VALUES ('S', 'S') ON DUPLICATE KEY UPDATE `course_id` = VALUES(`course_id`), `user_id` = VALUES(`user_id`)
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4457  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (4456), isucon[isucon]@localhost
   SELECT `status` FROM `courses` WHERE `id` = 'S' FOR SHARE
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 5558  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=0.7 (3835), isucon[isucon]@localhost
   SELECT `submissions`.`score` FROM `submissions` WHERE `user_id` = 'S' AND `class_id` = 'S'
-  Count: N  Time=N.00s (1s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4942  Time=0.00s (1s)  Lock=0.00s (0s)  Rows=1.0 (4942), isucon[isucon]@localhost
   SELECT * FROM `users` WHERE `id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2721  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (2719), isucon[isucon]@localhost
   SELECT * FROM `courses` WHERE `id` = 'S' FOR SHARE
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 440  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=4.6 (2006), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`period` = N AND `courses`.`day_of_week` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.40s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.40s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `users` (`id`, `code`, `name`, `hashed_password`, `type`) VALUES
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
@@ -5051,29 +5051,29 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
   ('S','S','S','S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 719  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=13.3 (9552), isucon[isucon]@localhost
   SELECT `courses`.* FROM `courses` JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id` WHERE `courses`.`status` != 'S' AND `registrations`.`user_id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2287  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (2287), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `registrations` WHERE `course_id` = 'S' AND `user_id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 406  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=19.5 (7898), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`type` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1633  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=3.4 (5558), isucon[isucon]@localhost
   SELECT * FROM `classes` WHERE `course_id` = 'S' ORDER BY `part` DESC
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 412  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `announcements` (`id`, `course_id`, `title`, `message`) VALUES ('S', 'S', 'S', 'S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 408  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=17.9 (7305), isucon[isucon]@localhost
   SELECT `users`.* FROM `users` JOIN `registrations` ON `users`.`id` = `registrations`.`user_id` WHERE `registrations`.`course_id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 421  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `classes` (`id`, `course_id`, `part`, `title`, `description`) VALUES ('S', 'S', N, 'S', 'S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 301  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=14.1 (4255), isucon[isucon]@localhost
   SELECT `submissions`.`user_id`, `submissions`.`file_name`, `users`.`code` AS `user_code` FROM `submissions` JOIN `users` ON `users`.`id` = `submissions`.`user_id` WHERE `class_id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 108  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.3 (37), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `users`.`name` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 364  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (363), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE `courses`.`id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 136  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=6.9 (936), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND ((N=N AND `courses`.`name` LIKE 'S') OR (N=N AND `courses`.`keywords` LIKE 'S')) ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.08s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.08s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `registrations`
   (
   `course_id` CHAR(N),
@@ -5082,11 +5082,11 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   CONSTRAINT FK_registrations_course_id FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`),
   CONSTRAINT FK_registrations_user_id FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
   )
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 397  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (397), isucon[isucon]@localhost
   SELECT `code` FROM `users` WHERE `id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 207  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   UPDATE `courses` SET `status` = 'S' WHERE `id` = 'S'
-  Count: N  Time=N.07s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.07s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `unread_announcements`
   (
   `announcement_id` CHAR(N)   NOT NULL,
@@ -5096,7 +5096,7 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   CONSTRAINT FK_unread_announcements_announcement_id FOREIGN KEY (`announcement_id`) REFERENCES `announcements` (`id`),
   CONSTRAINT FK_unread_announcements_user_id FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
   )
-  Count: N  Time=N.07s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.07s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `submissions`
   (
   `user_id`   CHAR(N)     NOT NULL,
@@ -5107,7 +5107,7 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   CONSTRAINT FK_submissions_user_id FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT FK_submissions_class_id FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`)
   )
-  Count: N  Time=N.05s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.05s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `courses`
   (
   `id`          CHAR(N) PRIMARY KEY,
@@ -5123,9 +5123,9 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   `status`      ENUM ('S', 'S', 'S')                NOT NULL DEFAULT 'S',
   CONSTRAINT FK_courses_teacher_id FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`)
   )
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 208  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (208), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `courses` WHERE `id` = 'S' FOR UPDATE
-  Count: N  Time=N.05s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.05s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   -- master data
   CREATE TABLE `users`
   (
@@ -5135,9 +5135,9 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   `hashed_password` BINARY(N)                  NOT NULL,
   `type`            ENUM ('S', 'S') NOT NULL
   )
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 20  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=19.8 (396), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.04s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.04s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `courses` (`id`, `code`, `type`, `name`, `description`, `credit`, `period`, `day_of_week`, `teacher_id`, `keywords`, `status`) VALUES
   ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S', 'S'),
   ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S', 'S'),
@@ -5169,22 +5169,22 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S', 'S'),
   ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S', 'S'),
   ('S', 'S', 'S', 'S', 'S', N, N, 'S', 'S', 'S', 'S')
-  Count: N  Time=N.04s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.04s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `announcements` VALUES
   ('S','S','S','S'),
   ('S','S','S','S'),
   ('S','S','S','S'),
   ('S','S','S','S'),
   ('S','S','S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 153  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (152), isucon[isucon]@localhost
   SELECT * FROM `users` WHERE `code` = 'S'
-  Count: N  Time=N.04s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.04s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `courses`
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 302  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (302), isucon[isucon]@localhost
   SELECT COUNT(*) FROM `classes` WHERE `id` = 'S' FOR UPDATE
-  Count: N  Time=N.03s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.03s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `classes`
-  Count: N  Time=N.03s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.03s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `submissions` VALUES
   ('S','S','S',N),
   ('S','S','S',N),
@@ -5201,11 +5201,11 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   ('S','S','S',N),
   ('S','S','S',N),
   ('S','S','S',N)
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 301  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   UPDATE `classes` SET `submission_closed` = true WHERE `id` = 'S'
-  Count: N  Time=N.03s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.03s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `announcements`
-  Count: N  Time=N.02s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.02s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `announcements`
   (
   `id`         CHAR(N) PRIMARY KEY,
@@ -5214,7 +5214,7 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   `message`    TEXT         NOT NULL,
   CONSTRAINT FK_announcements_course_id FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
   )
-  Count: N  Time=N.02s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.02s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   CREATE TABLE `classes`
   (
   `id`                CHAR(N) PRIMARY KEY,
@@ -5226,20 +5226,20 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   UNIQUE KEY `idx_classes_course_id_part` (`course_id`, `part`),
   CONSTRAINT FK_classes_course_id FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
   )
-  Count: N  Time=N.02s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.02s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   -- CREATEと逆順
   DROP TABLE IF EXISTS `unread_announcements`
-  Count: N  Time=N.01s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.01s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `registrations`
-  Count: N  Time=N.01s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.01s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `submissions`
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 48  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=34.0 (1633), isucon[isucon]@localhost
   SELECT `courses`.* FROM `registrations` JOIN `courses` ON `registrations`.`course_id` = `courses`.`id` WHERE `user_id` = 'S'
-  Count: N  Time=N.01s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.01s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   DROP TABLE IF EXISTS `users`
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 60  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=2.5 (150), isucon[isucon]@localhost
   SELECT `announcements`.`id`, `courses`.`id` AS `course_id`, `courses`.`name` AS `course_name`, `announcements`.`title`, NOT `unread_announcements`.`is_deleted` AS `unread` FROM `announcements` JOIN `courses` ON `announcements`.`course_id` = `courses`.`id` JOIN `registrations` ON `courses`.`id` = `registrations`.`course_id` JOIN `unread_announcements` ON `announcements`.`id` = `unread_announcements`.`announcement_id` WHERE N=N AND `announcements`.`course_id` = 'S' AND `unread_announcements`.`user_id` = 'S' AND `registrations`.`user_id` = 'S' ORDER BY `announcements`.`id` DESC LIMIT N OFFSET N
-  Count: N  Time=N.01s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.01s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `users` (`id`, `code`, `name`, `hashed_password`, `type`) VALUES
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
@@ -5291,11 +5291,11 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
   ('S','S','S','S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 144  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   SET time_zone='S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 38  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   ROLLBACK
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `unread_announcements` VALUES
   ('S','S',true),
   ('S','S',true),
@@ -5312,51 +5312,51 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   ('S','S',true),
   ('S','S',true),
   ('S','S',true)
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `classes` VALUES
   ('S','S',N,'S','S',N),
   ('S','S',N,'S','S',N),
   ('S','S',N,'S','S',N),
   ('S','S',N,'S','S',N),
   ('S','S',N,'S','S',N)
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `registrations` VALUES
   ('S','S'),
   ('S','S'),
   ('S','S'),
   ('S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `courses` VALUES
   ('S','S','S','S','S',N,N,'S','S','S','S'),
   ('S','S','S','S','S',N,N,'S','S','S','S'),
   ('S','S','S','S','S',N,N,'S','S','S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 2  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), isucon[isucon]@localhost
   INSERT INTO `users` (`id`, `code`, `name`, `hashed_password`, `type`) VALUES
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
   ('S','S','S','S','S'),
   ('S','S','S','S','S')
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 4  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (4), isucon[isucon]@localhost
   SELECT * FROM `announcements` WHERE `id` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 3  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=17.3 (52), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`status` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (1), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`type` = 'S' AND `courses`.`credit` = N AND `users`.`name` = 'S' AND `courses`.`period` = N AND `courses`.`day_of_week` = 'S' AND ((N=N AND `courses`.`name` LIKE 'S') OR (N=N AND `courses`.`keywords` LIKE 'S')) AND `courses`.`status` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=12.0 (12), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`credit` = N ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=8.0 (8), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`period` = N ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=7.0 (7), isucon[isucon]@localhost
   SELECT `courses`.*, `users`.`name` AS `teacher` FROM `courses` JOIN `users` ON `courses`.`teacher_id` = `users`.`id` WHERE N=N AND `courses`.`day_of_week` = 'S' ORDER BY `courses`.`code` LIMIT N OFFSET N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (1), isucon[isucon]@localhost
   SELECT * FROM `courses` WHERE `code` = 'S'
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), isucon[isucon]@localhost
+  Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=1.0 (1), isucon[isucon]@localhost
   SELECT * FROM `classes` WHERE `course_id` = 'S' AND `part` = N
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), 0users@0hosts
+  Count: 95715  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   administrator command: Prepare
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), 0users@0hosts
+  Count: 95715  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   administrator command: Close stmt
-  Count: N  Time=N.00s (0s)  Lock=N.00s (0s)  Rows=N.N (N), 0users@0hosts
+  Count: 101  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   administrator command: Quit
 
 
